@@ -7,6 +7,10 @@ import {
   Button,
   Input,
   Textarea,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
 } from "@nextui-org/react";
 import React, { useState } from "react";
 
@@ -37,14 +41,14 @@ export default function PropertyAdd({ isOpen, onClose }) {
     formData.append("Description", description);
     formData.append("Amenities", amenities);
     formData.append("Status", status);
-    formData.append("AadhaarCard", aadhaarCard);
+    formData.append("AddedBy",localStorage.getItem("userId"));
 
     for (let i = 0; i < imageFiles.length; i++) {
       formData.append("ImageFiles", imageFiles[i]);
     }
 
     try {
-      const response = await fetch("http://localhost:5176/api/Property/add", {
+      const response = await fetch("https://localhost:5005/api/Property/add", {
         method: "POST",
         body: formData,
       });
@@ -86,7 +90,7 @@ export default function PropertyAdd({ isOpen, onClose }) {
         justifyContent: "center",
         alignItems: "center",
         height: "200vh",
-        marginTop: "10px",
+        marginTop: "0px",
       }}
     >
       <ModalContent
@@ -108,139 +112,175 @@ export default function PropertyAdd({ isOpen, onClose }) {
         >
           Add Property
         </ModalHeader>
-        <ModalBody css={{ marginBottom: "5px", // Reduced margin at the bottom
-    paddingTop: "5px"}}>
-          
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "5px",
-              }}
-            >
-              <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-                {/* Row 1 */}
-                <div
-                  style={{ display: "flex", gap: "15px", marginBottom: "10px" }}
-                >
-                  <Input
-                    label="Property Type"
-                    placeholder="Enter Sale (0) or Rent (1)"
-                    value={propertyType}
-                    onChange={(e) => setPropertyType(Number(e.target.value))}
-                    variant="bordered"
-                    required
-                    css={{ flex: "1 1 30%" }} // Flex for 3-column layout
-                  />
-                  <Input
-                    label="Location"
-                    placeholder="Enter the location"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    variant="bordered"
-                    required
-                    css={{ flex: "1 1 30%" }} // Flex for 3-column layout
-                  />
-                  <Input
-                    label="Price"
-                    placeholder="Enter the price"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    variant="bordered"
-                    required
-                    css={{ flex: "1 1 30%" }} // Flex for 3-column layout
-                  />
-                </div>
-                <div
-                  style={{ display: "flex", gap: "15px", marginBottom: "10px" }}
-                >
-                  <Input
-                    label="Status"
-                    placeholder="Enter status (0: Active, 1: Pending, 2: Sold, 3: Rented)"
-                    value={status}
-                    onChange={(e) => setStatus(Number(e.target.value))}
-                    variant="bordered"
-                    required
-                    css={{ flex: "1 1 30%" }} // Flex for 3-column layout
-                  />
-                  <Input
-                    label="Pincode"
-                    placeholder="Enter the pincode"
-                    value={pincode}
-                    onChange={(e) => setPincode(e.target.value)}
-                    variant="bordered"
-                    required
-                    css={{ flex: "1 1 30%" }} // Flex for 3-column layout
-                  />
-                  <Input
-                    label="Aadhaar Card"
-                    placeholder="Enter Aadhaar number"
-                    value={aadhaarCard}
-                    onChange={(e) => setAadhaarCard(e.target.value)}
-                    variant="bordered"
-                    required
-                    css={{ flex: "1 1 30%" }} // Flex for 3-column layout
-                  />
-                </div>
-
-                {/* Row 2 */}
-                <div
-                  style={{ display: "flex", gap: "15px", marginBottom: "10px" }}
-                >
-                  <Textarea
-                    label="Description"
-                    placeholder="Enter the description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    variant="bordered"
-                    required
-                    css={{ flex: "1 1 100%" }} // Full width for Description
-                  />
-                </div>
-                <div
-                  style={{ display: "flex", gap: "6px", marginBottom: "10px" }}
-                >
-                  <Input
-                    label="Amenities"
-                    placeholder="Enter amenities"
-                    value={amenities}
-                    onChange={(e) => setAmenities(e.target.value)}
-                    variant="bordered"
-                    css={{ flex: "1 1 100%" }} // Flex for 3-column layout
-                  />
-                </div>
-                <div>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "15px",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    <Input
-                      label="Upload Images"
-                      type="file"
-                      multiple
-                      onChange={handleImageChange}
-                      variant="bordered"
-                      required
-                      css={{ flex: "1 1 100%" }}
-                    />
-                  </div>
-                </div>
-              </form>
-            </div>
-
-          {message && <div className="text-green-500">{message}</div>}
-        </ModalBody>
-        <ModalFooter
-          css={{ justifyContent: "space-between", marginTop: "5px" }}
+        <ModalBody
+          css={{
+            marginBottom: "5px", // Reduced margin at the bottom
+            paddingTop: "20px",
+          }}
         >
-          <Button color="primary" type="submit" onClick={handleSubmit}>
-            Add Property
-          </Button>
-          <Button color="danger" variant="bordered" onPress={onClose}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "5px",
+            }}
+          >
+            <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+              {/* Row 1 */}
+              <div
+                style={{ display: "flex", gap: "15px", marginBottom: "10px" }}
+              >
+                <Dropdown>
+                  <DropdownTrigger>
+                    <Button
+                      variant="bordered"
+                      css={{
+                        flex: "1 1 30%",
+                        padding: "10px",
+                        borderRadius: "8px",
+                        height: "40px", // Set height to match other inputs
+                      }}
+                    >
+                      {propertyType === 0 ? "Sale" : "Rent"}
+                    </Button>
+                  </DropdownTrigger>
+                  <DropdownMenu
+                    aria-label="Select Property Type"
+                    onAction={(key) => setPropertyType(Number(key))}
+                  >
+                    <DropdownItem key="0">Sale</DropdownItem>
+                    <DropdownItem key="1">Rent</DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+
+                <Input
+                  label="Location"
+                  placeholder="Enter the location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  variant="bordered"
+                  required
+                  css={{ flex: "1 1 30%" }} // Flex for 3-column layout
+                />
+                <Input
+                  label="Price"
+                  placeholder="Enter the price"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  variant="bordered"
+                  required
+                  css={{ flex: "1 1 30%" }} // Flex for 3-column layout
+                />
+              </div>
+              <div
+                style={{ display: "flex", gap: "15px", marginBottom: "10px" }}
+              >
+                <Dropdown>
+                  <DropdownTrigger>
+                    <Button
+                      variant="bordered"
+                      css={{
+                        flex: "1 1 30%",
+                        padding: "10px",
+                        borderRadius: "8px",
+                        height: "40px", // Set height to match other inputs
+                      }}
+                    >
+                      {status === 0
+                        ? "Active"
+                        : status === 1
+                        ? "Pending"
+                        : status === 2
+                        ? "Sold"
+                        : status === 3
+                        ? "Rented"
+                        : "Select Status"}
+                    </Button>
+                  </DropdownTrigger>
+                  <DropdownMenu
+                    aria-label="Select Status"
+                    onAction={(key) => setStatus(Number(key))}
+                  >
+                    <DropdownItem key="0">Active</DropdownItem>
+                    <DropdownItem key="1">Pending</DropdownItem>
+                    <DropdownItem key="2">Sold</DropdownItem>
+                    <DropdownItem key="3">Rented</DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+
+                <Input
+                  label="Pincode"
+                  placeholder="Enter the pincode"
+                  value={pincode}
+                  onChange={(e) => setPincode(e.target.value)}
+                  variant="bordered"
+                  required
+                  css={{ flex: "1 1 30%" }} // Flex for 3-column layout
+                />
+               
+              </div>
+
+              {/* Row 2 */}
+              <div
+                style={{ display: "flex", gap: "15px", marginBottom: "10px" }}
+              >
+                <Textarea
+                  label="Description"
+                  placeholder="Enter the description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  variant="bordered"
+                  required
+                  css={{ flex: "1 1 100%" }} // Full width for Description
+                />
+              </div>
+              <div
+                style={{ display: "flex", gap: "6px", marginBottom: "10px" }}
+              >
+                <Input
+                  label="Amenities"
+                  placeholder="Enter amenities"
+                  value={amenities}
+                  onChange={(e) => setAmenities(e.target.value)}
+                  variant="bordered"
+                  css={{ flex: "1 1 100%" }} // Flex for 3-column layout
+                />
+              </div>
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "15px",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <Input
+                    label="Upload Images"
+                    type="file"
+                    multiple
+                    onChange={handleImageChange}
+                    variant="bordered"
+                    required
+                    css={{ flex: "1 1 100%" }}
+                  />
+                </div>
+              </div>
+              {message && <p>{message}</p>}
+            </form>
+          </div>
+        </ModalBody>
+        <ModalFooter css={{ justifyContent: "flex-end" }}> {/* Align buttons to the right */}
+          <Button
+            auto
+            color="danger"
+            variant="bordered"
+            onClick={onClose}
+            css={{ marginRight: "10px", height: "40px" }} // Add margin for spacing
+          >
             Close
+          </Button>
+          <Button auto color="primary" onClick={handleSubmit} css={{ height: "40px" }}>
+            Add Property
           </Button>
         </ModalFooter>
       </ModalContent>

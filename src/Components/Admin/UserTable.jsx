@@ -39,11 +39,13 @@ const UserTable = ({ users }) => {
     pincode: '',
   });
   const { isOpen, onOpenChange } = useDisclosure();
+
+  
  
   // Fetch user details for editing
   const fetchUserDetails = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:5176/api/Admin/${userId}`);
+      const response = await fetch(`https://localhost:5002/api/users/${userId}`);
       if (!response.ok) throw new Error("Failed to fetch user details");
       const data = await response.json();
       setEditData({
@@ -69,15 +71,15 @@ const UserTable = ({ users }) => {
  
   // Save the edited user
   const handleSaveEdit = async () => {
-    const payload = {};
+    const payload = {userId: selectedUserId};
     for (const key in editData) {
       if (editData[key] !== "") {
         payload[key.charAt(0).toUpperCase() + key.slice(1)] = editData[key];
       }
     }
     try {
-      const response = await fetch(`http://localhost:5176/api/Admin/${selectedUserId}`, {
-        method: "PATCH",
+      const response = await fetch(`https://localhost:5002/api/users`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -100,7 +102,7 @@ const UserTable = ({ users }) => {
   // Delete a user
   const handleDeleteClick = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:5176/api/Admin/user/${userId}`, {
+      const response = await fetch(`https://localhost:5002/api/users/${userId}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete the user");

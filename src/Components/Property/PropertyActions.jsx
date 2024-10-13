@@ -6,21 +6,20 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  useDisclosure,
+  Input,
 } from "@nextui-org/react";
-
+import { useDisclosure } from "@nextui-org/react"; // Importing useDisclosure for modal handling
+ 
 export default function PropertyActions({ propertyId, onEdit, onDelete }) {
   const {
     isOpen: isEditOpen,
-    onOpen: onEditOpen,
     onOpenChange: onEditOpenChange,
   } = useDisclosure();
   const {
     isOpen: isDeleteOpen,
-    onOpen: onDeleteOpen,
     onOpenChange: onDeleteOpenChange,
   } = useDisclosure();
-
+ 
   const [editData, setEditData] = useState({
     propertyType: "",
     location: "",
@@ -28,13 +27,13 @@ export default function PropertyActions({ propertyId, onEdit, onDelete }) {
     price: "",
     description: "",
     amenities: "",
-    status: "",
+    status: "", // Ensure status is part of the state
   });
-
+ 
   const fetchPropertyDetails = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5176/api/Property/${propertyId}`
+        `https://localhost:5005/api/property/${propertyId}`
       );
       if (!response.ok) throw new Error("Failed to fetch property details");
       const data = await response.json();
@@ -45,26 +44,26 @@ export default function PropertyActions({ propertyId, onEdit, onDelete }) {
         price: data.price || "",
         description: data.description || "",
         amenities: data.amenities || "",
-        status: data.status || "",
+        status: data.status || "", // Ensure fetched status is used
       });
     } catch (error) {
       console.error("Error fetching property details:", error);
     }
   };
-
+ 
   const handleEditClick = async () => {
     await fetchPropertyDetails();
     onEditOpenChange(true); // Open the edit modal
   };
-
+ 
   const handleDeleteClick = () => {
     onDeleteOpenChange(true); // Open the delete confirmation modal
   };
-
+ 
   const confirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5176/api/Property/${propertyId}`,
+        `https://localhost:5005/api/property/${propertyId}`,
         {
           method: "DELETE",
         }
@@ -76,7 +75,7 @@ export default function PropertyActions({ propertyId, onEdit, onDelete }) {
       console.error("Error deleting property:", error);
     }
   };
-
+ 
   const handleSaveEdit = async () => {
     const formDataToSend = new FormData();
     for (const key in editData) {
@@ -87,21 +86,21 @@ export default function PropertyActions({ propertyId, onEdit, onDelete }) {
         );
       }
     }
-
+ 
     try {
       const response = await fetch(
-        `http://localhost:5176/api/Property/${propertyId}`,
+        `https://localhost:5005/api/property/${propertyId}`,
         {
           method: "PATCH",
           body: formDataToSend,
         }
       );
-
+ 
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to edit the property");
       }
-
+ 
       onEdit(propertyId, editData);
       onEditOpenChange(false); // Close the edit modal
       window.location.reload(); // Refresh the page
@@ -110,30 +109,27 @@ export default function PropertyActions({ propertyId, onEdit, onDelete }) {
       alert("An error occurred while saving the property. Please try again.");
     }
   };
-
+ 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditData((prev) => ({ ...prev, [name]: value }));
   };
-
+ 
+ 
   return (
     <>
-    <div className="flex justify-center">
-      {/* Edit Button */}
-      <Button color="primary" onPress={handleEditClick} className="mr-2" >
-        Edit
-      </Button>
-
-      {/* Delete Button */}
-      <Button
-        color="danger"
-        onPress={handleDeleteClick}
-        className="ml-2"
-        
-      >
-        Delete
-      </Button>
+      <div className="flex justify-center">
+        {/* Edit Button */}
+        <Button color="primary" onPress={handleEditClick} className="mr-2">
+          Edit
+        </Button>
+ 
+        {/* Delete Button */}
+        <Button color="danger" onPress={handleDeleteClick} className="ml-2">
+          Delete
+        </Button>
       </div>
+ 
       {/* Modal for editing */}
       <Modal isOpen={isEditOpen} onOpenChange={onEditOpenChange}>
         <ModalContent>
@@ -141,62 +137,60 @@ export default function PropertyActions({ propertyId, onEdit, onDelete }) {
             <>
               <ModalHeader>Edit Property</ModalHeader>
               <ModalBody>
-                <input
-                  type="text"
-                  name="propertyType"
-                  placeholder="Property Type"
-                  value={editData.propertyType || ""}
-                  onChange={handleInputChange}
-                  className="w-full p-2 mb-2 border border-gray-300 rounded"
-                />
-                <input
-                  type="text"
+                <Input
                   name="location"
                   placeholder="Location"
                   value={editData.location || ""}
                   onChange={handleInputChange}
-                  className="w-full p-2 mb-2 border border-gray-300 rounded"
+                  className="mb-2"
                 />
-                <input
-                  type="text"
+                <Input
                   name="pincode"
                   placeholder="Pincode"
                   value={editData.pincode || ""}
                   onChange={handleInputChange}
-                  className="w-full p-2 mb-2 border border-gray-300 rounded"
+                  className="mb-2"
                 />
-                <input
-                  type="text"
+                <Input
                   name="price"
                   placeholder="Price"
                   value={editData.price || ""}
                   onChange={handleInputChange}
-                  className="w-full p-2 mb-2 border border-gray-300 rounded"
+                  className="mb-2"
                 />
-                <textarea
+                <Input
                   name="description"
                   placeholder="Description"
                   value={editData.description || ""}
                   onChange={handleInputChange}
-                  className="w-full p-2 mb-2 border border-gray-300 rounded"
+                  className="mb-2"
                 />
+ 
               </ModalBody>
               <ModalFooter>
                 <div className="flex">
-                <Button color="danger" variant="bordered" onPress={onClose} className="mr-1">
+                  <Button
+                    color="danger"
+                    variant="bordered"
+                    onPress={onClose}
+                    className="mr-1"
+                  >
                     Cancel
                   </Button>
-                  <Button color="primary" onPress={handleSaveEdit} className="ml-1">
+                  <Button
+                    color="primary"
+                    onPress={handleSaveEdit}
+                    className="ml-1"
+                  >
                     Save
                   </Button>
-                  
                 </div>
               </ModalFooter>
             </>
           )}
         </ModalContent>
       </Modal>
-
+ 
       {/* Modal for delete confirmation */}
       <Modal isOpen={isDeleteOpen} onOpenChange={onDeleteOpenChange}>
         <ModalContent>

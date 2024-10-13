@@ -1,10 +1,24 @@
 import React, { useState } from "react";
 import { useTheme } from "next-themes"; // Import the theme hook
-import { AcmeLogo } from "../CommonComponents/AcmeLogo";
- 
+import axios from "axios"; // Ensure axios is imported for API calls
+import { useNavigate } from "react-router-dom"; // For navigation
+import { AcmeLogo } from "../CommonComponents/AcmeLogo"; // Ensure this import is correct
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Input,
+  Button,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem
+} from "@nextui-org/react"; // Importing necessary NextUI components
+
 export default function SignUp() {
   const { theme } = useTheme(); // Get the current theme
- 
+  const navigate = useNavigate(); // Initialize the useNavigate hook
+
   const [name, setName] = useState("");
   const [username, setUsername] = useState(""); // New state for username
   const [adhar, setAdhar] = useState(""); // New state for Adhar Card
@@ -26,12 +40,12 @@ export default function SignUp() {
     customerType: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
- 
+
   // Basic form validation logic
   const validateForm = () => {
     let valid = true;
     let formErrors = { ...errors };
- 
+
     // Name validation
     if (!name) {
       formErrors.name = "Name is required";
@@ -39,7 +53,7 @@ export default function SignUp() {
     } else {
       formErrors.name = "";
     }
- 
+
     // Username validation
     if (!username) {
       formErrors.username = "Username is required";
@@ -47,7 +61,7 @@ export default function SignUp() {
     } else {
       formErrors.username = "";
     }
- 
+
     // Adhar validation
     if (!adhar) {
       formErrors.adhar = "Adhar card is required";
@@ -58,7 +72,7 @@ export default function SignUp() {
     } else {
       formErrors.adhar = "";
     }
- 
+
     // Pincode validation
     if (!pincode) {
       formErrors.pincode = "Pincode is required";
@@ -69,7 +83,7 @@ export default function SignUp() {
     } else {
       formErrors.pincode = "";
     }
- 
+
     // Address validation
     if (!address) {
       formErrors.address = "Address is required";
@@ -77,7 +91,7 @@ export default function SignUp() {
     } else {
       formErrors.address = "";
     }
- 
+
     // Contact number validation
     if (!contactNumber) {
       formErrors.contactNumber = "Contact number is required";
@@ -88,19 +102,7 @@ export default function SignUp() {
     } else {
       formErrors.contactNumber = "";
     }
- 
- 
-    // Contact number validation
-    if (!contactNumber) {
-      formErrors.contactNumber = "Contact number is required";
-      valid = false;
-    } else if (!/^\d{10}$/.test(contactNumber)) {
-      formErrors.contactNumber = "Contact number must be 10 digits";
-      valid = false;
-    } else {
-      formErrors.contactNumber = "";
-    }
- 
+
     // Password validation
     if (!password) {
       formErrors.password = "Password is required";
@@ -111,7 +113,7 @@ export default function SignUp() {
     } else {
       formErrors.password = "";
     }
- 
+
     // Confirm password validation
     if (confirmPassword !== password) {
       formErrors.confirmPassword = "Passwords do not match";
@@ -119,7 +121,7 @@ export default function SignUp() {
     } else {
       formErrors.confirmPassword = "";
     }
- 
+
     // Customer Type validation
     if (customerType === "select") {
       formErrors.customerType = "Customer type is required";
@@ -127,45 +129,34 @@ export default function SignUp() {
     } else {
       formErrors.customerType = "";
     }
- 
+
     setErrors(formErrors);
     return valid;
   };
- 
+
   // Handle form submission and send to backend
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       setIsSubmitting(true);
- 
       const apiEndpoint =
-        customerType === "Broker"? "http://localhost:5176/api/Registration/Broker":"http://localhost:5176/api/Registration/User";
- 
+        customerType === "Broker" ? "https://localhost:5001/api/brokers" : "https://localhost:5002/api/users";
+
       const payload = {
-        name,
-        userName: username,
-        aadhaarCard: adhar,
-        pincode,
-        address,
-        contactNumber,
-        password,
+        Name: name,
+        UserName: username,
+        AadhaarCard: adhar,
+        Pincode: pincode,
+        Address: address,
+        ContactNumber: contactNumber,
+        Password: password,
       };
- 
+
       try {
-        const response = await fetch(apiEndpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
-         
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Registration successful:", data);
-        } else {
-          console.error("Failed to register:", response.statusText);
-        }
+        const response = await axios.post(apiEndpoint, payload);
+        console.log("Registration successful:", response.data);
+        // Navigate to another page on success, e.g., a dashboard or login page
+        navigate("/login");
       } catch (error) {
         console.error("Error during registration:", error);
       } finally {
@@ -173,11 +164,11 @@ export default function SignUp() {
       }
     }
   };
- 
+
   return (
     <div
-      className={`min-h-screen bg-cover bg-center relative flex flex-col justify-center items-center ${
-        theme === "dark" ? "bg-black " : "bg-white"
+      className={`max-h-screen flex justify-center items-center ${
+        theme === "dark" ? "bg-black" : "bg-white"
       }`}
       style={{
         backgroundImage:
@@ -186,243 +177,128 @@ export default function SignUp() {
             : "url('/assets/hero-background-light.jpg')", // Light mode background
       }}
     >
-      <div className="absolute inset-0 opacity-50"></div>
- 
-      <div
-        className={`relative z-20 flex flex-col justify-center items-center px-6 py-12 lg:px-8 ${
-          theme === "dark" ? "bg-gray-800 text-white" : "bg-blue-200 text-gray-900"
-        } p-8 rounded-lg shadow-lg space-y-6`}
+      <Card
+        className={`w-full max-w-5xl shadow-lg rounded-lg hover:shadow-lg hover:transform hover:scale-105 transition-all duration-300 border-2 ${
+          theme === "dark" ? "bg-black text-white border-gray-700" : "bg-white text-gray-900 border-gray-300"
+        }`}
       >
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm flex flex-col items-center">
-          <AcmeLogo className="mb-4" />
-          <h2 className="text-center text-2xl font-bold leading-9 tracking-tight">
-            Create your account
-          </h2>
-        </div>
- 
-        <form className="space-y-6" onSubmit={handleSubmit}>
- 
-          {/* Name Input */}
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium leading-6">
-              Name
-            </label>
-            <div className="mt-2">
-              <input
-                id="name"
-                name="name"
-                type="text"
-                autoComplete="name"
+        <CardHeader className="flex flex-col items-center">
+          <AcmeLogo className="mb-2" />
+          <h2 className="text-2xl font-bold">Create your account</h2>
+        </CardHeader>
+        <CardBody>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+            <div style={{ flex: '1 1 40%', minWidth: '200px' }}>
+              <Input
+                label="Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className={`block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ${
-                  errors.name ? "ring-red-600 focus:ring-red-600" : "ring-gray-300 focus:ring-indigo-600"
-                } placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 ${
-                  theme === "dark" ? "text-white bg-gray-700" : "text-gray-900 bg-white"
-                }`}
+                status={errors.name ? "error" : "default"}
               />
-              {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
+              {errors.name && <div className="text-red-600">{errors.name}</div>}
             </div>
-          </div>
- 
-          {/* Username Input */}
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium leading-6">
-              Username
-            </label>
-            <div className="mt-2">
-              <input
-                id="username"
-                name="username"
-                type="text"
+
+            <div style={{ flex: '1 1 40%', minWidth: '200px' }}>
+              <Input
+                label="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className={`block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ${
-                  errors.username ? "ring-red-600 focus:ring-red-600" : "ring-gray-300 focus:ring-indigo-600"
-                } placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 ${
-                  theme === "dark" ? "text-white bg-gray-700" : "text-gray-900 bg-white"
-                }`}
+                status={errors.username ? "error" : "default"}
               />
-              {errors.username && <p className="text-sm text-red-600">{errors.username}</p>}
+              {errors.username && <div className="text-red-600">{errors.username}</div>}
             </div>
-          </div>
- 
-          {/* Adhar Card Input */}
-          <div>
-            <label htmlFor="adhar" className="block text-sm font-medium leading-6">
-              Aadhaar Card
-            </label>
-            <div className="mt-2">
-              <input
-                id="adhar"
-                name="adhar"
-                type="number"
+
+            <div style={{ flex: '1 1 40%', minWidth: '200px' }}>
+              <Input
+                label="Aadhaar Card"
                 value={adhar}
                 onChange={(e) => setAdhar(e.target.value)}
-                className={`block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ${
-                  errors.adhar ? "ring-red-600 focus:ring-red-600" : "ring-gray-300 focus:ring-indigo-600"
-                } placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 ${
-                  theme === "dark" ? "text-white bg-gray-700" : "text-gray-900 bg-white"
-                }`}
+                status={errors.adhar ? "error" : "default"}
               />
-              {errors.adhar && <p className="text-sm text-red-600">{errors.adhar}</p>}
+              {errors.adhar && <div className="text-red-600">{errors.adhar}</div>}
             </div>
-          </div>
- 
-          {/* Pincode Input */}
-          <div>
-            <label htmlFor="pincode" className="block text-sm font-medium leading-6">
-              Pincode
-            </label>
-            <div className="mt-2">
-              <input
-                id="pincode"
-                name="pincode"
-                type="text"
+
+            <div style={{ flex: '1 1 40%', minWidth: '200px' }}>
+              <Input
+                label="Pincode"
                 value={pincode}
                 onChange={(e) => setPincode(e.target.value)}
-                className={`block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ${
-                  errors.pincode ? "ring-red-600 focus:ring-red-600" : "ring-gray-300 focus:ring-indigo-600"
-                } placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 ${
-                  theme === "dark" ? "text-white bg-gray-700" : "text-gray-900 bg-white"
-                }`}
+                status={errors.pincode ? "error" : "default"}
               />
-              {errors.pincode && <p className="text-sm text-red-600">{errors.pincode}</p>}
+              {errors.pincode && <div className="text-red-600">{errors.pincode}</div>}
             </div>
-          </div>
- 
-          {/* Address Input */}
-          <div>
-            <label htmlFor="address" className="block text-sm font-medium leading-6">
-              Address
-            </label>
-            <div className="mt-2">
-              <input
-                id="address"
-                name="address"
-                type="text"
+
+            <div style={{ flex: '1 1 40%', minWidth: '200px' }}>
+              <Input
+                label="Address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className={`block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ${
-                  errors.address ? "ring-red-600 focus:ring-red-600" : "ring-gray-300 focus:ring-indigo-600"
-                } placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 ${
-                  theme === "dark" ? "text-white bg-gray-700" : "text-gray-900 bg-white"
-                }`}
+                status={errors.address ? "error" : "default"}
               />
-              {errors.address && <p className="text-sm text-red-600">{errors.address}</p>}
+              {errors.address && <div className="text-red-600">{errors.address}</div>}
             </div>
-          </div>
- 
-          {/* Contact Number Input */}
-          <div>
-            <label htmlFor="contactNumber" className="block text-sm font-medium leading-6">
-              Contact Number
-            </label>
-            <div className="mt-2">
-              <input
-                id="contactNumber"
-                name="contactNumber"
-                type="text"
+
+            <div style={{ flex: '1 1 40%', minWidth: '200px' }}>
+              <Input
+                label="Contact Number"
                 value={contactNumber}
                 onChange={(e) => setContactNumber(e.target.value)}
-                className={`block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ${
-                  errors.contactNumber ? "ring-red-600 focus:ring-red-600" : "ring-gray-300 focus:ring-indigo-600"
-                } placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 ${
-                  theme === "dark" ? "text-white bg-gray-700" : "text-gray-900 bg-white"
-                }`}
+                status={errors.contactNumber ? "error" : "default"}
               />
-              {errors.contactNumber && <p className="text-sm text-red-600">{errors.contactNumber}</p>}
+              {errors.contactNumber && <div className="text-red-600">{errors.contactNumber}</div>}
             </div>
-          </div>
- 
-          {/* Password Input */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium leading-6">
-              Password
-            </label>
-            <div className="mt-2">
-              <input
-                id="password"
-                name="password"
+
+            <div style={{ flex: '1 1 40%', minWidth: '200px' }}>
+              <Input
+                label="Password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ${
-                  errors.password ? "ring-red-600 focus:ring-red-600" : "ring-gray-300 focus:ring-indigo-600"
-                } placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 ${
-                  theme === "dark" ? "text-white bg-gray-700" : "text-gray-900 bg-white"
-                }`}
+                status={errors.password ? "error" : "default"}
               />
-              {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
+              {errors.password && <div className="text-red-600">{errors.password}</div>}
             </div>
-          </div>
- 
-          {/* Confirm Password Input */}
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium leading-6">
-              Confirm Password
-            </label>
-            <div className="mt-2">
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
+
+            <div style={{ flex: '1 1 40%', minWidth: '200px' }}>
+              <Input
+                label="Confirm Password"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className={`block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ${
-                  errors.confirmPassword
-                    ? "ring-red-600 focus:ring-red-600"
-                    : "ring-gray-300 focus:ring-indigo-600"
-                } placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 ${
-                  theme === "dark" ? "text-white bg-gray-700" : "text-gray-900 bg-white"
-                }`}
+                status={errors.confirmPassword ? "error" : "default"}
               />
-              {errors.confirmPassword && (
-                <p className="text-sm text-red-600">{errors.confirmPassword}</p>
-              )}
+              {errors.confirmPassword && <div className="text-red-600">{errors.confirmPassword}</div>}
             </div>
-          </div>
- 
-          {/* Customer Type Select */}
-          <div>
-            <label htmlFor="customerType" className="block text-sm font-medium leading-6">
-              Customer Type
-            </label>
-            <div className="mt-2">
-              <select
-                id="customerType"
-                name="customerType"
-                value={customerType}
-                onChange={(e) => setCustomerType(e.target.value)}
-                className={`block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ${
-                  errors.customerType
-                    ? "ring-red-600 focus:ring-red-600"
-                    : "ring-gray-300 focus:ring-indigo-600"
-                } placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 ${
-                  theme === "dark" ? "text-white bg-gray-700" : "text-gray-900 bg-white"
-                }`}
-              >
-                <option value="select">Select a customer type</option>
-                <option value="Broker">Broker</option>
-                <option value="Customer">Customer</option>
-              </select>
-              {errors.customerType && (
-                <p className="text-sm text-red-600">{errors.customerType}</p>
-              )}
+
+            {/* Centered Dropdown for user type selection */}
+            <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center', flex: '1 1 40%', minWidth: '200px' }}>
+              <Dropdown>
+                <DropdownTrigger>
+                  <Button variant="bordered" className="w-1/2">
+                    {customerType === "select" ? "Select User" : customerType} {/* Placeholder text */}
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu
+                  onAction={setCustomerType} // Update customer type state
+                  aria-label="Customer Type"
+                >
+                  <DropdownItem key="Customer">Customer</DropdownItem>
+                  <DropdownItem key="Broker">Broker</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+              {errors.customerType && <div className="text-red-600">{errors.customerType}</div>}
             </div>
-          </div>
- 
-          <div>
-            <button
-              type="submit"
-              className="w-full flex justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Registering..." : "Register"}
-            </button>
-          </div>
-        </form>
-      </div>
+
+            {/* Centered Sign Up Button */}
+            <div style={{ display: 'flex', justifyContent: 'center', flex: '1 1 100%', minWidth: '200px' }}>
+              <Button type="submit" className="w-1/2 mb-2" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Sign Up"}
+              </Button>
+            </div>
+          </form>
+        </CardBody>
+      </Card>
     </div>
   );
 }
+
