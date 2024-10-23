@@ -6,7 +6,9 @@ export default function LoginPage() {
   return (
     <>
     <Navigationbar/>
+    <div className='mt-4'>
     <Login/>
+    </div>
     <Footer/>
     </>
     

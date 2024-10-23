@@ -52,7 +52,7 @@ const PropertyTable = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await fetch('https://localhost:5005/api/property/all');
+        const response = await fetch('https://localhost:5010/api/property/all');
         if (!response.ok) {
           throw new Error(`Error fetching properties: ${response.statusText}`);
         }
@@ -68,7 +68,7 @@ const PropertyTable = () => {
   // Fetch property details for editing
   const fetchPropertyDetails = async (propertyId) => {
     try {
-      const response = await fetch(`https://localhost:5005/api/property/${propertyId}`);
+      const response = await fetch(`https://localhost:5010/api/property/${propertyId}`);
       if (!response.ok) throw new Error("Failed to fetch property details");
       const data = await response.json();
       setEditData({
@@ -101,7 +101,7 @@ const PropertyTable = () => {
     }
  
     try {
-      const response = await fetch(`https://localhost:5005/api/property/${selectedPropertyId}`, {
+      const response = await fetch(`https://localhost:5010/api/property/${selectedPropertyId}`, {
         method: "PATCH",
         body: formDataToSend,
       });
@@ -117,7 +117,7 @@ const PropertyTable = () => {
         )
       );
       onOpenChange(false); // Close the modal
-    const updatedResponse = await fetch('https://localhost:5005/api/property/all');
+    const updatedResponse = await fetch('https://localhost:5010/api/property/all');
     const updatedData = await updatedResponse.json();
     setProperties(updatedData);  // Refresh the page (optional)
     } catch (error) {
@@ -129,7 +129,7 @@ const PropertyTable = () => {
   // Delete a property
   const handleDeleteClick = async (propertyId) => {
     try {
-      const response = await fetch(`https://localhost:5005/api/property/${propertyId}`, {
+      const response = await fetch(`https://localhost:5010/api/property/${propertyId}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete the property");
@@ -173,7 +173,7 @@ const PropertyTable = () => {
                   <TableCell align="center">{property.propertyId}</TableCell>
                   <TableCell align="center">{property.location}</TableCell>
                   <TableCell align="center">{property.pincode}</TableCell>
-                  <TableCell align="center">${property.price.toLocaleString()}</TableCell>
+                  <TableCell align="center">Rs.{property.price.toLocaleString()}</TableCell>
                   <TableCell align="center">{property.description}</TableCell>
                   <TableCell align="center">{property.amenities}</TableCell>
                   <TableCell align="center">{mapPropertyStatus(property.status)}</TableCell>

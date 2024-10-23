@@ -33,7 +33,7 @@ export default function PropertyActions({ propertyId, onEdit, onDelete }) {
   const fetchPropertyDetails = async () => {
     try {
       const response = await fetch(
-        `https://localhost:5005/api/property/${propertyId}`
+        `https://localhost:5010/api/property/${propertyId}`
       );
       if (!response.ok) throw new Error("Failed to fetch property details");
       const data = await response.json();
@@ -63,7 +63,7 @@ export default function PropertyActions({ propertyId, onEdit, onDelete }) {
   const confirmDelete = async () => {
     try {
       const response = await fetch(
-        `https://localhost:5005/api/property/${propertyId}`,
+        `https://localhost:5010/api/property/${propertyId}`,
         {
           method: "DELETE",
         }
@@ -89,7 +89,7 @@ export default function PropertyActions({ propertyId, onEdit, onDelete }) {
  
     try {
       const response = await fetch(
-        `https://localhost:5005/api/property/${propertyId}`,
+        `https://localhost:5010/api/property/${propertyId}`,
         {
           method: "PATCH",
           body: formDataToSend,

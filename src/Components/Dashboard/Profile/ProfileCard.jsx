@@ -16,7 +16,7 @@ const ProfileSection = () => {
       }
  
       try {
-        const response = await fetch(`https://localhost:5002/api/users/${userId}`);
+        const response = await fetch(`https://localhost:5010/api/users/${userId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch user data');
         }

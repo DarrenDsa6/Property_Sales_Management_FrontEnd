@@ -27,7 +27,7 @@ export default function Navigationbar({ aboutRef }) {
           <AcmeLogo className="mr-2" />
         </a>
         <p className="font-bold text-inherit text-sm ">
-          <a href="/">PROPERTY SALES</a>
+          <a href="/">MERCURIAL</a>
         </p>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="end">

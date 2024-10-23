@@ -41,7 +41,7 @@ export default function Admin() {
           return;
         }
         const response = await fetch(
-          `https://localhost:5005/api/property/${userId}`
+          `https://localhost:5010/api/property/${userId}`
         );
  
         if (!response.ok) {
@@ -120,7 +120,7 @@ export default function Admin() {
                     <Image
                       alt="Property"
                       className="object-cover w-full h-64 rounded-t-xl z-0"
-                      src={`https://localhost:5005${propertyImages[0].filePath}`}
+                      src={`https://localhost:5004${propertyImages[0].filePath}`}
                     />
                   ) : (
                     <div>No Images Available</div>

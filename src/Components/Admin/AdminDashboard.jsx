@@ -4,6 +4,7 @@ import AdminNavbar from '../Admin/AdminNavbar';
 import UserTable from '../Admin/UserTable';
 import PropertyTable from '../Admin/PropertyTable';
 import BrokerTable from './BrokerTable';
+import TransactionTable from './TransactionTable';
 import { useTheme } from 'next-themes'; // Import useTheme to get the current theme
  
 const AdminDashboard = () => {
@@ -11,6 +12,7 @@ const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [properties, setProperties] = useState([]);
     const [brokers, setBrokers] = useState([]);
+    const [transactions, setTransactions] = useState([]);
     const { theme } = useTheme(); // Get the current theme
  
     useEffect(() => {
@@ -22,12 +24,15 @@ const AdminDashboard = () => {
         }else if(selectedSection === 'brokers'){
                 fetchBrokers();
             }
-        
+        else if(selectedSection === 'transactions'){
+                fetchTransactions();
+        }
+       
     }, [selectedSection]);
  
     const fetchUsers = async () => {
         try {
-            const response = await fetch('https://localhost:5002/api/users');
+            const response = await fetch('https://localhost:5010/api/users');
             const data = await response.json();
             setUsers(data);
         } catch (error) {
@@ -37,21 +42,30 @@ const AdminDashboard = () => {
  
     const fetchProperties = async () => {
         try {
-            const response = await fetch('https://localhost:5005/api/property/all');
+            const response = await fetch('https://localhost:5010/api/property/all');
             const data = await response.json();
             setProperties(data);
         } catch (error) {
             console.error('Error fetching properties:', error);
         }
     };
-
+ 
     const fetchBrokers = async () => {
         try {
-            const response = await fetch('https://localhost:5001/api/brokers')
+            const response = await fetch('https://localhost:5010/api/brokers')
             const data = await response.json();
             setBrokers(data);
         }catch (error){
             console.error('error fetching Broker:', error);
+        }
+    };
+    const fetchTransactions = async () => {
+        try {
+            const response = await fetch('https://localhost:5010/api/transactions')
+            const data = await response.json();
+            setTransactions(data);
+        }catch (error){
+            console.error('error fetching Transactions:', error);
         }
     };
  
@@ -132,12 +146,28 @@ const AdminDashboard = () => {
                     >
                         Brokers
                     </Button>
+                    <Button
+                        variant={selectedSection === 'transactions' ? 'contained' : 'outlined'}
+                        color="primary"
+                        onClick={() => setSelectedSection('transactions')}
+                        sx={{
+                            borderRadius: '8px',
+                            padding: '10px 20px',
+                            '&:hover': {
+                                bgcolor: selectedSection === 'transactions' ? '#1976d2' : 'rgba(25, 118, 210, 0.1)', // Darken on hover
+                            },
+                            color: theme === 'dark' ? 'white' : 'black', // Button text color based on theme
+                        }}
+                    >
+                        Transaction
+                    </Button>
                 </Box>
  
                 {/* Conditionally render the tables based on selected section */}
                 {selectedSection === 'users' && <UserTable users={users} />}
                 {selectedSection === 'properties' && <PropertyTable properties={properties} />}
                 {selectedSection === 'brokers' && <BrokerTable brokers={brokers} />}
+                {selectedSection === 'transactions' && <TransactionTable brokers={transactions} />}
             </Box>
         </Box>
     );

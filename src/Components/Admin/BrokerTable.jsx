@@ -40,7 +40,7 @@ const BrokerTable = () => {
   useEffect(() => {
     const fetchBrokers = async () => {
       try {
-        const response = await fetch('https://localhost:5001/api/brokers');
+        const response = await fetch('https://localhost:5010/api/brokers');
         if (!response.ok) throw new Error(`Error fetching brokers: ${response.statusText}`);
         const data = await response.json();
         setBrokers(data);
@@ -54,7 +54,7 @@ const BrokerTable = () => {
   // Fetch broker details for editing
   const fetchBrokerDetails = async (brokerId) => {
     try {
-      const response = await fetch(`https://localhost:5001/api/brokers/${brokerId}`);
+      const response = await fetch(`https://localhost:5010/api/brokers/${brokerId}`);
       if (!response.ok) throw new Error("Failed to fetch broker details");
       const data = await response.json();
       setEditData({
@@ -88,7 +88,7 @@ const BrokerTable = () => {
     }
 
     try {
-      const response = await fetch(`https://localhost:5001/api/brokers/${selectedBrokerId}`, {
+      const response = await fetch(`https://localhost:5010/api/brokers/${selectedBrokerId}`, {
         method: "PUT",
         body: formDataToSend,
       });
@@ -114,7 +114,7 @@ const BrokerTable = () => {
   // Delete broker
   const handleDeleteClick = async (brokerId) => {
     try {
-      const response = await fetch(`https://localhost:5001/api/brokers/${brokerId}`, {
+      const response = await fetch(`https://localhost:5010/api/brokers/${brokerId}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete the broker");

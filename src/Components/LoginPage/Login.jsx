@@ -60,8 +60,8 @@ export default function Login() {
         // Determine endpoint based on user type
         const endpoint =
           userType === "Customer"
-            ? "https://localhost:5002/api/users/login"
-            : "https://localhost:5001/api/brokers/login";
+            ? "https://localhost:5010/api/users/login"
+            : "https://localhost:5010/api/brokers/login";
 
            
 

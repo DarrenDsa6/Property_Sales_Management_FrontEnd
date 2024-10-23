@@ -45,7 +45,7 @@ const UserTable = ({ users }) => {
   // Fetch user details for editing
   const fetchUserDetails = async (userId) => {
     try {
-      const response = await fetch(`https://localhost:5002/api/users/${userId}`);
+      const response = await fetch(`https://localhost:5010/api/users/${userId}`);
       if (!response.ok) throw new Error("Failed to fetch user details");
       const data = await response.json();
       setEditData({
@@ -78,7 +78,7 @@ const UserTable = ({ users }) => {
       }
     }
     try {
-      const response = await fetch(`https://localhost:5002/api/users`, {
+      const response = await fetch(`https://localhost:5010/api/users`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -102,7 +102,7 @@ const UserTable = ({ users }) => {
   // Delete a user
   const handleDeleteClick = async (userId) => {
     try {
-      const response = await fetch(`https://localhost:5002/api/users/${userId}`, {
+      const response = await fetch(`https://localhost:5010/api/users/${userId}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete the user");

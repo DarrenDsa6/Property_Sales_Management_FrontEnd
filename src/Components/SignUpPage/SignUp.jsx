@@ -140,7 +140,7 @@ export default function SignUp() {
     if (validateForm()) {
       setIsSubmitting(true);
       const apiEndpoint =
-        customerType === "Broker" ? "https://localhost:5001/api/brokers" : "https://localhost:5002/api/users";
+        customerType === "Broker" ? "https://localhost:5010/api/brokers" : "https://localhost:5010/api/users";
 
       const payload = {
         Name: name,

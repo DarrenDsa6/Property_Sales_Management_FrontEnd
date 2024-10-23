@@ -21,7 +21,7 @@ export default function HeroSection() {
         {/* Text Block */}
         <div className={`flex flex-col items-center justify-center text-center space-y-4 ${theme === "dark" ? "text-white" : "text-black"} `}>
           <h1 className="text-5xl font-bold">
-            Welcome to ACME Property Sales
+            Welcome to Mercurial
           </h1>
           <p className="text-md max-w-xl whitespace-pre-wrap">
             

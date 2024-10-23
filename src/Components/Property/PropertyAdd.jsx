@@ -48,7 +48,7 @@ export default function PropertyAdd({ isOpen, onClose }) {
     }
 
     try {
-      const response = await fetch("https://localhost:5005/api/Property/add", {
+      const response = await fetch("https://localhost:5010/api/Property/add", {
         method: "POST",
         body: formData,
       });

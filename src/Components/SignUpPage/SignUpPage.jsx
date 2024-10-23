@@ -6,7 +6,9 @@ export default function SignUpPage() {
   return (
     <>
     <Navigationbar/>
+    <div className='mt-3'>
     <SignUp/>
+    </div>
     <Footer/>
     </>
   )
